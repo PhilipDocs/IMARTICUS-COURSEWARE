@@ -1,0 +1,46 @@
+
+
+
+
+GS_LogLoss = data.frame("Rounds" = numeric(), 
+                        "Depth" = numeric(),
+                        "r_sample" = numeric(),
+                        "c_sample" = numeric(), 
+                        "minLogLoss" = numeric(),
+                        "best_round" = numeric())
+
+
+
+for (rounds in seq(100, 1000, 50)){
+
+    for (depth in c(4, 6, 8, 10)) {
+
+    for (r_sample in c(0.5, 0.75, 1)) {
+
+    for (c_sample in c(0.4, 0.6, 0.8, 1)) {
+
+               set.seed(1024)
+               eta_val = 2 / rounds
+               cv.res = xgb.cv(data = dtrain, nfold = 3, label = train.y, 
+                               nrounds = rounds, 
+                               eta = eta_val, 
+                               max_depth = depth,
+                               subsample = r_sample, 
+                               colsample_bytree = c_sample,
+                               early.stop.round = 0.5*rounds,
+                               objective='binary:logistic', 
+                               eval_metric = 'auc',
+                               verbose = TRUE)
+
+               print(paste(rounds, depth, r_sample, c_sample, min(as.matrix(cv.res)[,3]) ))
+               GS_LogLoss[nrow(GS_LogLoss)+1, ] = c(rounds, 
+                                                    depth, 
+                                                    r_sample, 
+                                                    c_sample, 
+                                                    min(as.matrix(cv.res)[,3]), 
+                                                   which.min(as.matrix(cv.res)[,3]))
+
+             }
+          }
+      }
+    }
