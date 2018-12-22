@@ -47,4 +47,26 @@ ev <- eigen(cor(mtcars)) # get eigenvalues
 ap <- parallel(subject=nrow(mtcars),var=ncol(mtcars), rep=100, cent=.05)
 nS <- nScree(x=ev$values, aparallel=ap$eigen$qevpea)
 plotnScree(nS)
-####################################
+####################################load bank data 
+colnames(bank.additional)
+str(bank.additional)
+col1<-bank.additional[,c(16:20)]
+bank.pca <- prcomp(bank.additional[,c(16:20)], center = TRUE,scale. = TRUE)
+bank.pca
+summary(bank.pca)
+train.data <- data.frame(bank.additional$y, bank.pca$x)
+train.data[1:2,]
+train.data <- train.data[,1:3]
+model1<-glm(bank.additional.y~.,data=train.data,family=binomial("logit"))
+summary(model1)
+colnames(bank.additional)
+model1<-glm(y~.,data=bank.additional[,c(16:21)],family=binomial("logit"))
+summary(model1)
+
+########Add more component
+train.data <- data.frame(bank.additional$y, bank.pca$x)
+train.data[1:2,]
+train.data <- train.data[,1:5]
+model1<-glm(bank.additional.y~.,data=train.data,family=binomial("logit"))
+summary(model1)
+###########
